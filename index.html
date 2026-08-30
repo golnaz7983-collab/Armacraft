@@ -21,27 +21,7 @@ section{padding:65px 7%;max-width:1100px;margin:auto}h2{text-align:center;font-s
 .copymsg{height:22px;color:#77ff91;margin-top:10px}
 @media(max-width:650px){.links{display:none}.hero{min-height:65vh}.ip{font-size:15px}}
 </style>
-
-<style>
-html{scroll-behavior:smooth}
-body{overflow-x:hidden}
-body:after{content:"";position:fixed;inset:0;z-index:-1;opacity:.12;background-image:linear-gradient(90deg,transparent 49%,#6cff89 50%,transparent 51%),linear-gradient(0deg,transparent 49%,#6cff89 50%,transparent 51%);background-size:70px 70px;animation:grid 12s linear infinite}
-@keyframes grid{to{background-position:70px 70px}}
-h1{animation:glow 2s ease-in-out infinite alternate}
-@keyframes glow{from{text-shadow:0 0 10px #2cff61}to{text-shadow:0 0 45px #2cff61}}
-button,.card,.ip{transition:.3s}
-button:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 10px 30px #245c32}
-.card:hover{transform:translateY(-8px);box-shadow:0 12px 35px #0008}
-.badge{animation:float 3s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-6px)}}
-.dot{animation:blink 1s infinite}
-@keyframes blink{50%{opacity:.3;transform:scale(.7)}}
-section{opacity:0;transform:translateY(35px);transition:.8s}
-section.show{opacity:1;transform:none}
-.particle{position:fixed;width:4px;height:4px;border-radius:50%;background:#65ff83;opacity:.5;z-index:-1;animation:rise linear infinite}
-@keyframes rise{from{transform:translateY(110vh)}to{transform:translateY(-10vh)}}
-</style>
-</head>
+<style>#server-status{opacity:1;transform:none}#serverState.online{color:#62ff83}#serverState.offline{color:#ff6666}.player{display:inline-block;background:#102617;border:1px solid #245936;border-radius:8px;padding:4px 9px;margin:4px;font-size:13px}.empty{color:#91a69a}</style></head>
 <body>
 <nav><div class="logo">⛏ ArMaCraft</div><div class="links"><a href="#home">خانه</a><a href="#features">امکانات</a><a href="#rules">قوانین</a><a href="#store">فروشگاه</a></div></nav>
 
@@ -58,6 +38,7 @@ section.show{opacity:1;transform:none}
 </div>
 </div>
 
+<section id="server-status"><h2>📡 وضعیت لحظه‌ای سرور</h2><div class="grid"><div class="card"><h3 id="serverState">🔄 در حال بررسی...</h3><p id="playerCount">تعداد پلیرها: —</p><p id="lastCheck">آخرین بررسی: —</p></div><div class="card"><h3>👥 بازیکنان آنلاین</h3><div id="playerList">در حال دریافت اطلاعات...</div></div></div></section>
 <section id="features"><h2>✨ امکانات</h2><div class="grid">
 <div class="card"><h3>🌍 دنیای بزرگ</h3><p>ماجراجویی و ساخت‌وساز در دنیای Minecraft.</p></div>
 <div class="card"><h3>👥 بازی با دوستان</h3><p>دوستانت را دعوت کن و با هم بازی کنید.</p></div>
@@ -79,11 +60,5 @@ section.show{opacity:1;transform:none}
 const ip="ArMaCraftnet.aternos.me:60107";
 function copyIP(){navigator.clipboard.writeText(ip).then(()=>{document.getElementById("msg").textContent="IP کپی شد! ✅"}).catch(()=>{document.getElementById("msg").textContent="کپی خودکار انجام نشد؛ IP را دستی کپی کنید."})}
 </script>
-
-<script>
-for(let i=0;i<25;i++){let p=document.createElement('i');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDuration=(7+Math.random()*10)+'s';p.style.animationDelay=(-Math.random()*12)+'s';document.body.appendChild(p)}
-const o=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('show')}),{threshold:.12});
-document.querySelectorAll('section').forEach(x=>o.observe(x));
-</script>
-</body>
+<script>async function updateServerStatus(){const s=document.getElementById("serverState"),c=document.getElementById("playerCount"),l=document.getElementById("playerList"),t=document.getElementById("lastCheck");try{const r=await fetch("https://api.mcsrvstat.us/3/ArMaCraftnet.aternos.me:60107",{cache:"no-store"});if(!r.ok)throw 0;const d=await r.json();if(d.online){s.textContent="🟢 سرور آنلاین است";s.className="online";const n=d.players?.online??0,m=d.players?.max??"?";c.textContent=`تعداد پلیرها: ${n} / ${m}`;const p=d.players?.list||[];l.innerHTML=p.length?p.map(x=>`<span class="player">👤 ${String(x).replace(/[&<>"']/g,a=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[a]))}</span>`).join(""):"<span class="empty">فعلاً بازیکنی آنلاین نیست.</span>"}else{s.textContent="🔴 سرور آفلاین است";s.className="offline";c.textContent="تعداد پلیرها: 0";l.innerHTML="<span class="empty">سرور خاموش است.</span>"}t.textContent="آخرین بررسی: "+new Date().toLocaleTimeString("fa-IR")}catch(e){s.textContent="⚠️ وضعیت نامشخص";s.className="offline";c.textContent="اطلاعات پلیرها در دسترس نیست";l.innerHTML="<span class="empty">اتصال به سرویس وضعیت برقرار نشد.</span>";t.textContent="آخرین بررسی: "+new Date().toLocaleTimeString("fa-IR")}}updateServerStatus();setInterval(updateServerStatus,30000);</script></body>
 </html>
